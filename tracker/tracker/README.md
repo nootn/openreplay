@@ -136,12 +136,12 @@ Stop/discard, delete backend data, certify clinical capture, or replace decoded
 outbound and replay-asset tests for your actual application.
 
 
-### Terminal discard (local candidate API)
+### Terminal discard
 
 `tracker.discard(): void` retires that Tracker permanently. It drops pending main-thread buffers, terminates its worker without the flushing Stop/closing messages, detaches owned collection and removes only configured SDK identity keys. A new recording requires a new Tracker. Repeated discard is harmless; identity getters and capture delegates no longer access the retired App. Plugins invoked through `use()` afterwards receive null, as for an unavailable App.
 
 Ordinary `stop()` is unchanged and still flushes. Discard does not retract dispatched requests (keepalive batches can finish after worker termination), remove server-accepted data or prove a network-wide no-packets-after-call guarantee. Default storage is not inherently memory-only. Global instrumentation wrappers are not all uninstalled; retired instances stop collecting/emitting, including cached FontFace tuples, but wrapper depth can grow across repeated instances.
 
-For the Clin6 synthetic controller use a fresh memory-only storage pair per instance, forceSingleTab true, debug-report endpoint null, and disable analytics, network capture, canvas, crossdomain/frames, offline/cold saving and in-memory CSS scanning. Existing caller consent/principal/policy checks remain required. This source API is not production/privacy acceptance and has not yet been exercised by the bounded runtime harness.
+Integrations requiring memory-only recording must supply a fresh memory-only storage pair per instance and independently configure collection channels, assets, consent and access checks. Discard alone does not establish an application privacy policy; validate outbound data and replay behaviour for the actual integration.
 
 With analytics enabled, discard drops its pending batch and autosend/retry work; ordinary analytics Stop remains flushing. Previously persisted analytics profile properties are not erased by this API. Retired iframe listeners cannot restore session keys.
